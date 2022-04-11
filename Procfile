@@ -1,1 +1,1 @@
-web: npm install -g @angular/cli && npm start
+web: ng build --prod && npm start
