@@ -7,13 +7,15 @@ import { HiitTimerComponent } from './components/hiit-timer/hiit-timer.component
 import { HiitTimerFormComponent } from './components/hiit-timer-form/hiit-timer-form.component';
 import { TimerLanguageSelectionComponent } from './components/timer-language-selection/timer-language-selection.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DelayDirective } from './directives/delay.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     HiitTimerComponent,
     HiitTimerFormComponent,
-    TimerLanguageSelectionComponent
+    TimerLanguageSelectionComponent,
+    DelayDirective
   ],
   imports: [
     BrowserModule,

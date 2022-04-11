@@ -44,15 +44,11 @@ export class HiitTimerComponent implements OnInit {
 
   synth = window.speechSynthesis;
 
-  voices: any = []
-
   message = new SpeechSynthesisUtterance();
-
-
 
   ngOnInit(): void {
     const languages: any = {
-      "German": /apple/i.test(navigator.vendor) ? 2 : 0,
+      "German": /apple/i.test(navigator.vendor) ? 3 : 0,
       "English": 1,
       "French": 4,
       "Spanish": 14
@@ -61,6 +57,7 @@ export class HiitTimerComponent implements OnInit {
     timer(10).pipe( // getVoices() need some Time to be initialized
       mergeMap(() => this.selectedLanguageSubject$),
     ).subscribe((message: any) => {
+      this.synth.getVoices().forEach(console.log)
       this.message.voice =
         this.synth.getVoices()[languages[message]]
     })
@@ -76,7 +73,6 @@ export class HiitTimerComponent implements OnInit {
         })
       )
       .subscribe((msg: any) => {
-        this.voices = this.synth.getVoices()
         this.message.text = msg;
         window.speechSynthesis.speak(this.message)
       })
