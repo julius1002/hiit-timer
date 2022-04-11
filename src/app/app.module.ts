@@ -8,6 +8,9 @@ import { HiitTimerFormComponent } from './components/hiit-timer-form/hiit-timer-
 import { TimerLanguageSelectionComponent } from './components/timer-language-selection/timer-language-selection.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DelayDirective } from './directives/delay.directive';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -21,7 +24,10 @@ import { DelayDirective } from './directives/delay.directive';
     BrowserModule,
     AppRoutingModule,
     FormsModule, 
-    ReactiveFormsModule
+    ReactiveFormsModule, 
+    BrowserAnimationsModule,
+    MatInputModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

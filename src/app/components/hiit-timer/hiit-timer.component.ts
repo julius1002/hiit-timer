@@ -12,7 +12,6 @@ export class HiitTimerComponent implements OnInit {
   @ViewChild('circle', { static: true }) circle: ElementRef | undefined;
   @ViewChild('arrow', { static: true }) arrow: ElementRef | undefined;
   @ViewChild('pointer', { static: true }) pointer: ElementRef | undefined;
-  @ViewChild('startBtn', { static: true }) startBtn: ElementRef | undefined;
 
   timer$: Subject<any> = new Subject();
 

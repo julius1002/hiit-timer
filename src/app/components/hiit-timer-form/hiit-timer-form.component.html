@@ -1,26 +1,31 @@
+<h2>Julius' HIITimer</h2>
 <form [formGroup]="hiitForm">
-    <div style="display:flex; flex-direction: column;">
-        <label>
-            Rounds
-            <input type="number" formControlName="rounds">
-        </label>
-        <label>
-            Duration (seconds)
-            <input type="number" formControlName="duration">
-        </label>
-        <label>
-            Time to get Ready (seconds)
-            <input type="number" formControlName="initialDelay">
-        </label>
-        <label>
-            Break Time (seconds)
-            <input type="number" formControlName="breakTime">
-        </label>
+    <div style="display:flex; flex-direction: column; text-align: center; margin: 2em auto; width: 90%">
+        <mat-form-field appearance="outline">
+            <mat-label>Rounds</mat-label>
+            <input matInput type="number" formControlName="rounds">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Duration (seconds)</mat-label>
+            <input matInput type="number" formControlName="duration">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Time to get Ready (seconds)</mat-label>
+            <input matInput type="number" formControlName="initialDelay">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Break Time(seconds)</mat-label>
+            <input matInput type="number" formControlName="breakTime">
+        </mat-form-field>
+        <div style="display:flex; justify-content: space-between; margin-bottom: 2em">
+            <button #submitButton type="button" [disabled]="this.hiitForm.status === 'INVALID'" mat-raised-button
+                style="width:45%">
+                Start</button>
+            <button #stopBtn type="button" mat-raised-button style="width:45%">
+                Stop</button>
+        </div>
     </div>
-    <button #submitButton type="button" [disabled]="this.hiitForm.status === 'INVALID'">
-        Start</button>
-        <button #stopBtn type="button">
-            Stop</button>
     <div>
         <strong>Overall time:</strong> {{
         this.secondsToDhms(this.hiitForm.get('rounds')?.value *

@@ -10,9 +10,9 @@ import { fromEvent, map, Subject } from 'rxjs';
 })
 export class HiitTimerFormComponent implements OnInit {
 
-  @ViewChild('submitButton', { static: true }) submitButton: ElementRef | undefined;
+  @ViewChild('submitButton', { read: ElementRef, static: true }) submitButton: ElementRef | undefined;
 
-  @ViewChild('stopBtn', { static: true }) stopBtn: ElementRef | undefined;
+  @ViewChild('stopBtn', { read: ElementRef, static: true }) stopBtn: ElementRef | undefined;
 
   hiitForm: FormGroup;
 
