@@ -1,0 +1,53 @@
+<app-hiit-timer-form [configSubject$]="this.configSubject$" [stopBtn$] = "this.stopBtn$"></app-hiit-timer-form>
+<app-timer-language-selection [selectedLanguageSubject$] ="this.selectedLanguageSubject$"></app-timer-language-selection>
+<div>
+    <div style="
+    background: rgb(255, 255, 255);
+    width: 200px;
+    height: 200px;
+    border: 4px rgb(159, 159, 255) solid;
+    border-radius: 50%;
+    position:relative;
+    margin:2em
+    ">
+        <div *appDelay="300" style="top: -11%; left: 48%; position: absolute;">0</div>
+        <div *appDelay="350" style="top: -2%; left: 78%; position: absolute">5</div>
+        <div *appDelay="400" style="top: 20%; left: 96%; position: absolute;">10</div>
+        <div *appDelay="450" style="top: 50%; right: -11%; position: absolute;">15</div>
+        <div *appDelay="500" style="top: 75%; left: 96%; position: absolute;">20</div>
+        <div *appDelay="550" style="top: 92%; left: 78%; position: absolute">25</div>
+        <div *appDelay="600" style="bottom: -11%; left: 46%; position: absolute;">30</div>
+        <div *appDelay="650" style="top: 92%; left: 15%; position: absolute">35</div>
+        <div *appDelay="700" style="top: 75%; left: -2%; position: absolute;">40</div>
+        <div *appDelay="750" style="top: 50%; left: -11%; position: absolute;">45</div>
+        <div *appDelay="800" style="top: 20%; left: -5%; position: absolute;">50</div>
+        <div *appDelay="850" style="top: -2%; left: 14%; position: absolute">55</div>
+        <div style="transform-origin: left bottom;
+    position:absolute; height:100px; width: 2px; background-color: rgb(159, 159, 255); left: 50%; position: relative"
+            #pointer>
+            <div #arrow style="position:absolute; 
+        width: 0; left:-5px;
+    height: 0;
+    border-style: solid;
+    border-width: 0 6px 40px 5px;
+    border-color: transparent transparent rgb(159, 159, 255) transparent;
+    "></div>
+            <span #circle style="position:absolute;
+    bottom:0px;
+    left: -1px;
+    height: 5px;
+    width: 5px;
+    background-color: rgb(159, 159, 255);
+    border-radius: 50%;
+    display: inline-block;"></span>
+
+        </div>
+    </div>
+    <ng-container *ngIf="(timer$ | async) as timer">
+        {{timer.value}}
+        Round:
+        {{timer.round +1}}/{{timer.config.rounds}}
+        Pause: {{timer.pause}}
+        {{timer | json}}
+    </ng-container>
+</div>
