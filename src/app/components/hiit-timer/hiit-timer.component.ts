@@ -57,7 +57,8 @@ export class HiitTimerComponent implements OnInit {
     timer(10).pipe( // getVoices() need some Time to be initialized
       mergeMap(() => this.selectedLanguageSubject$),
     ).subscribe((message: any) => {
-      this.synth.getVoices().forEach(console.log)
+      this.synth.getVoices().map(value => value.lang).forEach(console.log)
+      
       this.message.voice =
         this.synth.getVoices()[languages[message]]
     })
