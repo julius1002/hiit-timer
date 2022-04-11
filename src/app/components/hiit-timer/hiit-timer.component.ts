@@ -52,7 +52,7 @@ export class HiitTimerComponent implements OnInit {
 
   ngOnInit(): void {
     const languages: any = {
-      "German": 0,
+      "German": /apple/i.test(navigator.vendor) ? 2 : 0,
       "English": 1,
       "French": 4,
       "Spanish": 14
