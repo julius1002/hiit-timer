@@ -1,3 +1,7 @@
+TODO: remove unnecessary devdependencies from dependencies (    "@angular-devkit/build-angular": "~13.2.4",
+    "@angular/cli": "~13.2.4",
+    "@angular/compiler-cli": "~13.2.0",)
+
 # Timer
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.4.
