@@ -49,16 +49,15 @@ export class HiitTimerComponent implements OnInit {
   ngOnInit(): void {
     const languages: any = {
       "German": /apple/i.test(navigator.vendor) ? 3 : 0,
-      "English": 1,
-      "French": 4,
-      "Spanish": 14
+      "English": /apple/i.test(navigator.vendor) ? 6 : 1,
+      "French": /apple/i.test(navigator.vendor) ? 15 : 4,
+      "Spanish": /apple/i.test(navigator.vendor) ? 12 : 14
     }
 
     timer(10).pipe( // getVoices() need some Time to be initialized
       mergeMap(() => this.selectedLanguageSubject$),
     ).subscribe((message: any) => {
-      this.synth.getVoices().map(value => value.lang).forEach(console.log)
-      
+      // this.synth.getVoices().map(value => value.lang).forEach(console.log) for debugging languages on IOS
       this.message.voice =
         this.synth.getVoices()[languages[message]]
     })
