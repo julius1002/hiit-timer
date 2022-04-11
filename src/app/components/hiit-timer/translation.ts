@@ -1,4 +1,4 @@
-const translation: any = {
+    const translation: any = {
     "German": {
         "Break": "Pause",
         "1": "1",
