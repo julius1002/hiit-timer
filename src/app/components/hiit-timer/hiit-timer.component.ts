@@ -2,6 +2,8 @@ import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/co
 import { interval, delay, map, take, scan, tap, Subject, switchMap, takeUntil, pairwise, filter, timer, withLatestFrom, pluck, BehaviorSubject, mergeMap } from 'rxjs';
 import * as R from 'ramda'
 import { translation } from "./translation"
+import { secondsToDhms } from '../secondToDhms';
+
 @Component({
   selector: 'app-hiit-timer',
   templateUrl: './hiit-timer.component.html',
@@ -164,5 +166,9 @@ export class HiitTimerComponent implements OnInit {
         switchMap((value: any) => timer(value[1].duration * 1000))
       )
       .subscribe(() => this.speaker$.next("You are done"))
+  }
+
+  public secondsToDhmsDupl(value:any){
+    return secondsToDhms(value)
   }
 }
