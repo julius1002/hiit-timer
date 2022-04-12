@@ -4,18 +4,30 @@
     <div style="margin: 2em auto;
     background: rgb(255, 255, 255); width: 270px; height: 270px; border: 2px rgb(164, 159, 255) solid; border-radius: 50%; position: relative;;
     ">
-        <div *appDelay="300" style="top: -11%; left: 48%; position: absolute;">0</div>
-        <div *appDelay="350" style="top: -2%; left: 78%; position: absolute">5</div>
-        <div *appDelay="400" style="top: 20%; left: 96%; position: absolute;">10</div>
-        <div *appDelay="450" style="top: 50%; right: -11%; position: absolute;">15</div>
-        <div *appDelay="500" style="top: 75%; left: 96%; position: absolute;">20</div>
-        <div *appDelay="550" style="top: 92%; left: 78%; position: absolute">25</div>
-        <div *appDelay="600" style="bottom: -11%; left: 46%; position: absolute;">30</div>
-        <div *appDelay="650" style="top: 92%; left: 15%; position: absolute">35</div>
-        <div *appDelay="700" style="top: 75%; left: -2%; position: absolute;">40</div>
-        <div *appDelay="750" style="top: 50%; left: -11%; position: absolute;">45</div>
-        <div *appDelay="800" style="top: 20%; left: -5%; position: absolute;">50</div>
-        <div *appDelay="850" style="top: -2%; left: 14%; position: absolute">55</div>
+        <div *appDelay="300" style="color: rgb(159, 159, 255);top: 3%; left: 45%; position: absolute; font-size: 2em;">
+            60</div>
+        <div *appDelay="350" style="color: rgb(159, 159, 255);top: 9%; left: 71%; position: absolute; font-size: 2em;">5
+        </div>
+        <div *appDelay="400" style="color: rgb(159, 159, 255);top: 26%; left: 82%; position: absolute; font-size: 2em;">
+            10</div>
+        <div *appDelay="450" style="color: rgb(159, 159, 255);top: 48%; right: 1%; position: absolute; font-size: 2em;">
+            15</div>
+        <div *appDelay="500" style="color: rgb(159, 159, 255);top: 66%; left: 82%; position: absolute; font-size: 2em;">
+            20</div>
+        <div *appDelay="550" style="color: rgb(159, 159, 255);top: 82%; left: 70%; position: absolute; font-size: 2em;">
+            25</div>
+        <div *appDelay="600" style="color: rgb(159, 159, 255);bottom: 1%; left: 46%; position: absolute;font-size: 2em">
+            30</div>
+        <div *appDelay="650" style="color: rgb(159, 159, 255);top: 82%; left: 20%; position: absolute;font-size: 2em">35
+        </div>
+        <div *appDelay="700" style="color: rgb(159, 159, 255);top: 66%; left: 5%; position: absolute;font-size: 2em">40
+        </div>
+        <div *appDelay="750" style="color: rgb(159, 159, 255);top: 48%; left: 0%; position: absolute;font-size: 2em">45
+        </div>
+        <div *appDelay="800" style="color: rgb(159, 159, 255);top: 26%; left: 6%; position: absolute;font-size: 2em">50
+        </div>
+        <div *appDelay="850" style="color: rgb(159, 159, 255);top: 9%; left: 21%; position: absolute;font-size: 2em">55
+        </div>
         <div style="transform-origin: left bottom;
     position:absolute; height:135px; width: 2px; background-color: rgb(159, 159, 255); left: 50%; position: relative"
             #pointer>
@@ -36,12 +48,22 @@
     display: inline-block;"></span>
 
         </div>
+        <ng-container *ngIf="(timer$ | async) as timer">
+            <div style="text-align: center; font-size: 1.5em;">
+                <p>{{timer.value}}
+                </p>
+                <p>Round: {{timer.round +1}}/{{timer.config.rounds}}
+                    <!-- Pause: {{timer.pause}} -->
+                </p>
+            </div>
+            <!-- {{timer | json}} -->
+            <mat-progress-spinner diameter="285" strokeWidth="8"
+                style="font-size: 2em; position: relative; top: -209px; right: 8px; width: 285px; height: 285px;"
+                mode="determinate" value="{{ (timer.value / ((timer.config.rounds *
+                timer.config.duration) + (timer.config.breakTime * (timer.config.rounds - 1)))) * 100 }}
+        ">
+            </mat-progress-spinner>
+        </ng-container>
     </div>
-    <ng-container *ngIf="(timer$ | async) as timer">
-        {{this.secondsToDhmsDupl(timer.value)}}
-        Round:
-        {{timer.round +1}}/{{timer.config.rounds}}
-        Pause: {{timer.pause}}
-        {{timer | json}}
-    </ng-container>
+
 </div>
