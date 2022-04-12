@@ -1,5 +1,5 @@
-    
-    const translation: any = {
+
+const translation: any = {
     "German": {
         "Break": "Pause",
         "1": "1",
@@ -9,6 +9,7 @@
         "Break Over": "Pause vorbei",
         "Last Round": "Letzte Runde",
         "Starting": "Auf gehts",
+        "Halfway Through": "Halfway Through",
         "Delay": (value: number) => value === 0 ? "Starte" : "Starte in " + (value === 1 ? "einer Sekunde" : value + " Sekunden")
     },
     "English": {
@@ -19,7 +20,7 @@
         "You are done": "You are done",
         "Break Over": "Break Over",
         "Last Round": "Last Round",
-        "Halfway Through" : "Halfway Through",
+        "Halfway Through": "Halfway Through",
         "Delay": (value: number) => value === 0 ? "Starting" : "Starting in " + (value === 1 ? "one Second" : value + " Seconds")
     },
     "French": {
@@ -30,6 +31,7 @@
         "You are done": "Vous avez fini",
         "Break Over": "Fin de la pause",
         "Last Round": "Dernier tour",
+        "Halfway Through": "A mi-chemin",
         "Delay": (value: number) => value === 0 ? "Commence" : "Début dans " + (value === 1 ? "une Seconde" : value + " secondes")
     },
     "Spanish": {
@@ -40,6 +42,7 @@
         "You are done": "Ya está",
         "Break Over": "Pausa al final",
         "Last Round": "Última ronda",
+        "Halfway Through": "A mitad de camino",
         "Delay": (value: number) => value === 0 ? "Comienza!" : "Comienza en " + (value === 1 ? "un segundo" : value + " segundos")
     }
 }
