@@ -1,3 +1,4 @@
+    
     const translation: any = {
     "German": {
         "Break": "Pause",
@@ -18,6 +19,7 @@
         "You are done": "You are done",
         "Break Over": "Break Over",
         "Last Round": "Last Round",
+        "Halfway Through" : "Halfway Through",
         "Delay": (value: number) => value === 0 ? "Starting" : "Starting in " + (value === 1 ? "one Second" : value + " Seconds")
     },
     "French": {

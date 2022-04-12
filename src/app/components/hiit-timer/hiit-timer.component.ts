@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { interval, delay, map, take, scan, tap, Subject, switchMap, takeUntil, pairwise, filter, timer, withLatestFrom, pluck, BehaviorSubject, mergeMap } from 'rxjs';
+import { interval, delay, map, take, scan, tap, Subject, switchMap, takeUntil, pairwise, filter, timer, withLatestFrom, pluck, BehaviorSubject, mergeMap, distinctUntilChanged } from 'rxjs';
 import * as R from 'ramda'
 import { translation } from "./translation"
 import { secondsToDhms } from '../secondToDhms';
@@ -120,6 +120,14 @@ export class HiitTimerComponent implements OnInit {
       .subscribe((arr: any) => {
 
         // todo refactor with map see this.exec()
+
+
+        //console.log((arr[0].value * 2)
+
+        if (arr[0].value % (arr[1].breakTime + arr[1].duration) === (arr[1].duration / 2)) {
+          this.speaker$.next("Halfway Through")
+        }
+
         if (!arr[0].pause && Number.isInteger((arr[0].value + 3) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime)))) {
           this.speaker$.next("3")
         }
@@ -129,9 +137,7 @@ export class HiitTimerComponent implements OnInit {
         if (!arr[0].pause && Number.isInteger((arr[0].value + 1) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime)))) {
           this.speaker$.next("1")
         }
-        if (Number.isInteger(arr[0].value / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime)))) {
-          this.speaker$.next("Break")
-        }
+
         this.exec("rotatePointer")(arr[0].value)
         if (arr[0].pause) {
           this.exec("setPointerBackgroundTo")("green")
@@ -154,12 +160,20 @@ export class HiitTimerComponent implements OnInit {
         filter(Boolean))
       .subscribe(() => this.speaker$.next("Break Over"))
 
-    // consumer is notified last round has begun
+    // consumer when break is comming
+    this.timer$
+      .pipe(
+        pluck("pause"),
+        pairwise(),
+        map(([a, b]) => !a && b),
+        filter(Boolean),
+      )
+      .subscribe(() => this.speaker$.next("Break"))
 
     this.timer$
       .pipe(
         withLatestFrom(this.configSubject$), // first element of array is value, second is config
-        filter((value: any) => value[0].round == (value[1].rounds - 1) && (value[0].value % (value[1].breakTime + value[1].duration)) === 0),
+        filter((value: any) => (value[0].round == (value[1].rounds - 1)) && (value[0].value % (value[1].breakTime + value[1].duration)) === 0),
         tap((value: any) => {
           this.speaker$.next("Last Round")
         }),
@@ -168,7 +182,7 @@ export class HiitTimerComponent implements OnInit {
       .subscribe(() => this.speaker$.next("You are done"))
   }
 
-  public secondsToDhmsDupl(value:any){
+  public secondsToDhmsDupl(value: any) {
     return secondsToDhms(value)
   }
 }
