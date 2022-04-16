@@ -9,7 +9,7 @@ const translation: any = {
         "Break Over": "Pause vorbei",
         "Last Round": "Letzte Runde",
         "Starting": "Auf gehts",
-        "Halfway Through": "Halfway Through",
+        "Halfway Through": "Die Hälfte ist geschafft",
         "Delay": (value: number) => value === 0 ? "Starte" : "Starte in " + (value === 1 ? "einer Sekunde" : value + " Sekunden")
     },
     "English": {

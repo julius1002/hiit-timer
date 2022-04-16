@@ -1,35 +1,40 @@
-<h2>Julius' HIITimer</h2>
 <form [formGroup]="hiitForm">
-    <div style="display:flex; flex-direction: column; text-align: center; margin: 2em auto; width: 90%; font-size: 16px;">
-        <mat-form-field appearance="outline">
-            <mat-label>Rounds</mat-label>
-            <input matInput type="number" formControlName="rounds">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Duration (seconds)</mat-label>
-            <input matInput type="number" formControlName="duration">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-            <mat-label>Time to get Ready (seconds)</mat-label>
-            <input matInput type="number" formControlName="initialDelay">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-            <mat-label>Break Time(seconds)</mat-label>
-            <input matInput type="number" formControlName="breakTime">
-        </mat-form-field>
-        <div style="display:flex; justify-content: space-between; margin-bottom: 2em">
-            <button #submitButton type="button" [disabled]="this.hiitForm.status === 'INVALID'" mat-raised-button
-                style="width:45%">
-                Start</button>
-            <button #stopBtn type="button" mat-raised-button style="width:45%">
-                Stop</button>
+    <div style="display:flex; justify-content: space-between; margin: 0 auto; font-size: 17px;">
+        <div style="display:flex; flex-direction: column; width: 42%; margin-left: 1em">
+            <mat-form-field appearance="outline">
+                <mat-label>Rounds</mat-label>
+                <input placeholder="number" matInput type="number" formControlName="rounds">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Duration
+                </mat-label>
+                <input placeholder="seconds" matInput type="number" formControlName="duration">
+            </mat-form-field>
+        </div>
+        <div style="display:flex; flex-direction: column; width: 42%;margin-right: 1em">
+            <mat-form-field appearance="outline">
+                <mat-label>Time to get Ready</mat-label>
+                <input placeholder="seconds" matInput type="number" formControlName="initialDelay">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Break Time</mat-label>
+                <input placeholder="seconds" matInput type="number" formControlName="breakTime">
+            </mat-form-field>
         </div>
     </div>
-    <div>
+    <div style="width: 90%; margin: 1em auto; text-align: center; font-size: 1.5em;">
         <strong>Overall time:</strong> {{
         this.secondsToDhmsDupl(this.hiitForm.get('rounds')?.value *
         (this.hiitForm.get('duration')?.value) + (this.hiitForm.get('rounds')?.value - 1) *
         this.hiitForm.get('breakTime')?.value) }}
+    </div>
+    <div style="display:flex; justify-content: space-between; margin-bottom: 1em;">
+        <button style="flex-basis: 42%; margin-left:1em;" #submitButton type="button"
+            [disabled]="this.hiitForm.status === 'INVALID'" mat-raised-button>
+            <mat-icon>play_arrow</mat-icon>
+        </button>
+        <button style="flex-basis: 42%;margin-right:1em" #stopBtn type="button" mat-raised-button>
+            <mat-icon>stop</mat-icon>
+        </button>
     </div>
 </form>

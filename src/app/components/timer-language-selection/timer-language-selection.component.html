@@ -1,9 +1,11 @@
 <form [formGroup]="lanuageForm">
-    <label>Select Announcement Language</label>
-    <select formControlName="language">
-        <option value="German">German</option>
-        <option value="English">English</option>
-        <option value="French">French</option>
-        <option value="Spanish">Spanish</option>
-    </select>
+    <div style ="margin: 2em auto;text-align: center;">
+        <label>Select Announcement Language</label>
+        <select formControlName="language" style="font-size: 16px; margin-left:1em">
+            <option value="German">German</option>
+            <option value="English">English</option>
+            <option value="French">French</option>
+            <option value="Spanish">Spanish</option>
+        </select>
+    </div>
 </form>

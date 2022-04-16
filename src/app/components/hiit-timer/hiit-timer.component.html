@@ -1,36 +1,43 @@
-<app-hiit-timer-form [configSubject$]="this.configSubject$" [stopBtn$]="this.stopBtn$"></app-hiit-timer-form>
-<app-timer-language-selection [selectedLanguageSubject$]="this.selectedLanguageSubject$"></app-timer-language-selection>
+<h1 style="text-align: center; margin: 1em auto">Julius' HIITimer <mat-icon>timer</mat-icon>
+</h1>
+
 <div>
-    <div style="margin: 2em auto;
-    background: rgb(255, 255, 255); width: 270px; height: 270px; border: 2px rgb(164, 159, 255) solid; border-radius: 50%; position: relative;;
+    <div #timerBackground style="margin: 2em auto;
+    background-color:#0a599f;
+    box-shadow: 0px 0px 12px 2px black;
+     width: 270px; height: 270px; border: 5px rgb(199, 207, 247) solid; border-radius: 50%; position: relative;;
     ">
-        <div *appDelay="300" style="color: rgb(159, 159, 255);top: 3%; left: 45%; position: absolute; font-size: 2em;">
+        <div *appDelay="300" style="color: rgb(255, 255, 255);top: 3%; left: 45%; position: absolute; font-size: 2em;">
             60</div>
-        <div *appDelay="350" style="color: rgb(159, 159, 255);top: 9%; left: 71%; position: absolute; font-size: 2em;">5
+        <div *appDelay="350" style="color: rgb(255, 255, 255);top: 9%; left: 71%; position: absolute; font-size: 2em;">5
         </div>
-        <div *appDelay="400" style="color: rgb(159, 159, 255);top: 26%; left: 82%; position: absolute; font-size: 2em;">
+        <div *appDelay="400" style="color: rgb(255, 255, 255);top: 26%; left: 82%; position: absolute; font-size: 2em;">
             10</div>
-        <div *appDelay="450" style="color: rgb(159, 159, 255);top: 48%; right: 1%; position: absolute; font-size: 2em;">
+        <div *appDelay="450" style="color: rgb(255, 255, 255);top: 48%; right: 1%; position: absolute; font-size: 2em;">
             15</div>
-        <div *appDelay="500" style="color: rgb(159, 159, 255);top: 66%; left: 82%; position: absolute; font-size: 2em;">
+        <div *appDelay="500" style="color: rgb(255, 255, 255);top: 66%; left: 82%; position: absolute; font-size: 2em;">
             20</div>
-        <div *appDelay="550" style="color: rgb(159, 159, 255);top: 82%; left: 70%; position: absolute; font-size: 2em;">
+        <div *appDelay="550" style="color: rgb(255, 255, 255);top: 82%; left: 70%; position: absolute; font-size: 2em;">
             25</div>
-        <div *appDelay="600" style="color: rgb(159, 159, 255);bottom: 1%; left: 46%; position: absolute;font-size: 2em">
+        <div *appDelay="600" style="color: rgb(255, 255, 255);bottom: 1%; left: 46%; position: absolute;font-size: 2em">
             30</div>
-        <div *appDelay="650" style="color: rgb(159, 159, 255);top: 82%; left: 20%; position: absolute;font-size: 2em">35
+        <div *appDelay="650" style="color: rgb(255, 255, 255);top: 82%; left: 20%; position: absolute;font-size: 2em">35
         </div>
-        <div *appDelay="700" style="color: rgb(159, 159, 255);top: 66%; left: 5%; position: absolute;font-size: 2em">40
+        <div *appDelay="700" style="color: rgb(255, 255, 255);top: 66%; left: 5%; position: absolute;font-size: 2em">40
         </div>
-        <div *appDelay="750" style="color: rgb(159, 159, 255);top: 48%; left: 0%; position: absolute;font-size: 2em">45
+        <div *appDelay="750" style="color: rgb(255, 255, 255);top: 48%; left: 0%; position: absolute;font-size: 2em">45
         </div>
-        <div *appDelay="800" style="color: rgb(159, 159, 255);top: 26%; left: 6%; position: absolute;font-size: 2em">50
+        <div *appDelay="800" style="color: rgb(255, 255, 255);top: 26%; left: 6%; position: absolute;font-size: 2em">50
         </div>
-        <div *appDelay="850" style="color: rgb(159, 159, 255);top: 9%; left: 21%; position: absolute;font-size: 2em">55
+        <div *appDelay="850" style="color: rgb(255, 255, 255);top: 9%; left: 21%; position: absolute;font-size: 2em">55
         </div>
         <div style="transform-origin: left bottom;
-    position:absolute; height:135px; width: 2px; background-color: rgb(159, 159, 255); left: 50%; position: relative"
-            #pointer>
+    position:absolute;
+     height:135px;
+     width: 2px; background-color: rgb(159, 159, 255);
+     
+      left: 50%;
+       position: relative" #pointer>
             <div #arrow style="position:absolute; 
             width: 2px;
          left:-2px;
@@ -49,17 +56,15 @@
 
         </div>
         <ng-container *ngIf="(timer$ | async) as timer">
-            <div style="text-align: center; font-size: 1.5em;">
+            <div style="text-align: center; font-size: 2em; color:white">
                 <p>{{timer.value}}
                 </p>
-                <p>Round: {{timer.round +1}}/{{timer.config.rounds}}
-                    <!-- Pause: {{timer.pause}} -->
+                <p>{{timer.round +1}}/{{timer.config.rounds}}
                 </p>
             </div>
-            <!-- {{timer | json}} -->
-            <mat-progress-spinner diameter="285" strokeWidth="8"
-                style="font-size: 2em; position: relative; top: -209px; right: 8px; width: 285px; height: 285px;"
-                mode="determinate" value="{{ (timer.value / ((timer.config.rounds *
+            <mat-progress-spinner class="spinner" diameter="285" strokeWidth="9" color="green"
+                style="font-size: 2em; position: relative; top: -207px; right: 8px; width: 285px; height: 285px;"
+                mode="determinate" value="{{(timer.value / ((timer.config.rounds *
                 timer.config.duration) + (timer.config.breakTime * (timer.config.rounds - 1)))) * 100 }}
         ">
             </mat-progress-spinner>
@@ -67,3 +72,5 @@
     </div>
 
 </div>
+<app-timer-language-selection [selectedLanguageSubject$]="this.selectedLanguageSubject$"></app-timer-language-selection>
+<app-hiit-timer-form [configSubject$]="this.configSubject$" [stopBtn$]="this.stopBtn$"></app-hiit-timer-form>

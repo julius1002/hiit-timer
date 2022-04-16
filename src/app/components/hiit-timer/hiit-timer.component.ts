@@ -14,6 +14,7 @@ export class HiitTimerComponent implements OnInit {
   @ViewChild('circle', { static: true }) circle: ElementRef | undefined;
   @ViewChild('arrow', { static: true }) arrow: ElementRef | undefined;
   @ViewChild('pointer', { static: true }) pointer: ElementRef | undefined;
+  @ViewChild('timerBackground', { static: true }) timerBackground: ElementRef | undefined;
 
   timer$: Subject<any> = new Subject();
 
@@ -27,16 +28,12 @@ export class HiitTimerComponent implements OnInit {
   speaker$ = new Subject();
 
   //arrow animations
-  private circleBackGround = (color: string) => this.renderer.setStyle(this.circle?.nativeElement, "background-color", `${color}`)
-  private pointerBackGround = (color: string) => this.renderer.setStyle(this.pointer?.nativeElement, "background-color", `${color}`)
+  private pointerBackGround = (color: string) => this.renderer.setStyle(this.timerBackground?.nativeElement, "background-color", `${color}`)
   private rotatePointer = (degree: number) => this.renderer.setStyle(this.pointer?.nativeElement, "transform", `rotate(${degree * 6}deg)`)
-  private setArrowColorTo = (color: string) => this.renderer.setStyle(this.arrow?.nativeElement, "border-color", `transparent transparent ${color} transparent`)
 
   private arrowAnimations: any = {
-    "setPointerBackgroundTo": this.pointerBackGround,
     "rotatePointer": this.rotatePointer,
-    "setArrowColorTo": this.setArrowColorTo,
-    "circleBackGround": this.circleBackGround
+    "setPointerBackgroundTo": this.pointerBackGround,
   }
 
   private exec(action: string) { return this.arrowAnimations[action] ? this.arrowAnimations[action] : () => console.log("no matching key") }
@@ -141,12 +138,8 @@ export class HiitTimerComponent implements OnInit {
         this.exec("rotatePointer")(arr[0].value)
         if (arr[0].pause) {
           this.exec("setPointerBackgroundTo")("green")
-          this.exec("setArrowColorTo")("green")
-          this.exec("circleBackGround")("green")
         } else {
-          this.exec("setPointerBackgroundTo")("rgb(159, 159, 255)")
-          this.exec("setArrowColorTo")("rgb(159, 159, 255)")
-          this.exec("circleBackGround")("rgb(159, 159, 255)")
+          this.exec("setPointerBackgroundTo")("#0a599f")
         }
       }
       )
