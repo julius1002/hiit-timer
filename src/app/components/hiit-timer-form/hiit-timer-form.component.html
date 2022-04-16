@@ -28,7 +28,7 @@
         (this.hiitForm.get('duration')?.value) + (this.hiitForm.get('rounds')?.value - 1) *
         this.hiitForm.get('breakTime')?.value) }}
     </div>
-    <div style="display:flex; justify-content: space-between; margin-bottom: 1em;">
+    <div style="display:flex; justify-content: space-between; margin-bottom: 4em;">
         <button style="flex-basis: 42%; margin-left:1em;" #submitButton type="button"
             [disabled]="this.hiitForm.status === 'INVALID'" mat-raised-button>
             <mat-icon>play_arrow</mat-icon>
