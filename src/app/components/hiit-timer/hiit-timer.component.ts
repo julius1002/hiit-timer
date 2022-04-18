@@ -79,9 +79,9 @@ export class HiitTimerComponent implements OnInit {
     const sum = (input: number) => R.reduce(((a: number, b: number) => a + b), 0)(R.range(1, input))
 
     //playing around with rambda
-    console.log(R.range(1, 5))
+  /*  console.log(R.range(1, 5))
     console.log(R.zipWith((a, b: any) => a + b)(R.range(1, 5), R.range(1, 5)))
-    console.log(sum(5))
+    console.log(sum(5)) */
 
     const everyTenth: (a: number) => number
       = (n: number) => n / 10;
@@ -121,17 +121,21 @@ export class HiitTimerComponent implements OnInit {
 
         //console.log((arr[0].value * 2)
 
-        if (arr[0].value % (arr[1].breakTime + arr[1].duration) === (arr[1].duration / 2)) {
+        const roundTimerGreaterTen = (roundTime: number) => roundTime > 10
+
+        if ((arr[0].value % (arr[1].breakTime + arr[1].duration) === (arr[1].duration / 2)) && roundTimerGreaterTen(arr[1].duration)) {
           this.speaker$.next("Halfway Through")
         }
 
-        if (!arr[0].pause && Number.isInteger((arr[0].value + 3) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime)))) {
+        if (!arr[0].pause && Number.isInteger((arr[0].value + 3) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
           this.speaker$.next("3")
         }
-        if (!arr[0].pause && Number.isInteger((arr[0].value + 2) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime)))) {
+
+        if (!arr[0].pause && Number.isInteger((arr[0].value + 2) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
           this.speaker$.next("2")
         }
-        if (!arr[0].pause && Number.isInteger((arr[0].value + 1) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime)))) {
+
+        if (!arr[0].pause && Number.isInteger((arr[0].value + 1) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
           this.speaker$.next("1")
         }
 
@@ -145,23 +149,26 @@ export class HiitTimerComponent implements OnInit {
       )
 
     // consumer is notifi ed when break is over. This happes when a true follows a false with pairwise
-    this.timer$
-      .pipe(
-        pluck("pause"),
-        pairwise(),
-        map(([a, b]) => a && !b),
-        filter(Boolean))
-      .subscribe(() => this.speaker$.next("Break Over"))
+    /*  this.timer$
+        .pipe(
+          pluck("pause"),
+          pairwise(),
+          map(([a, b]) => a && !b),
+          filter(Boolean))
+        .subscribe(() => this.speaker$.next("Break Over"))*/
 
     // consumer when break is comming
     this.timer$
       .pipe(
+        filter(value => value.config?.breakTime > 5),
         pluck("pause"),
         pairwise(),
-        map(([a, b]) => !a && b),
-        filter(Boolean),
+        map(([a, b]) => !a && b ? "Break" : a && !b ? "Break Over" : ""),
+        filter(R.pipe(R.isEmpty, R.not))
       )
-      .subscribe(() => this.speaker$.next("Break"))
+      .subscribe(this.speaker$)
+
+    //this.speaker$.subscribe(console.log) speaker debug
 
     this.timer$
       .pipe(
@@ -170,7 +177,7 @@ export class HiitTimerComponent implements OnInit {
         tap((value: any) => {
           this.speaker$.next("Last Round")
         }),
-        switchMap((value: any) => timer(value[1].duration * 1000))
+        switchMap((value: any) => timer(value[1].duration * 1000).pipe(takeUntil(this.stopBtn$))),
       )
       .subscribe(() => this.speaker$.next("You are done"))
   }
