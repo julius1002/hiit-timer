@@ -79,9 +79,9 @@ export class HiitTimerComponent implements OnInit {
     const sum = (input: number) => R.reduce(((a: number, b: number) => a + b), 0)(R.range(1, input))
 
     //playing around with rambda
-  /*  console.log(R.range(1, 5))
-    console.log(R.zipWith((a, b: any) => a + b)(R.range(1, 5), R.range(1, 5)))
-    console.log(sum(5)) */
+    /*  console.log(R.range(1, 5))
+      console.log(R.zipWith((a, b: any) => a + b)(R.range(1, 5), R.range(1, 5)))
+      console.log(sum(5)) */
 
     const everyTenth: (a: number) => number
       = (n: number) => n / 10;
@@ -103,6 +103,13 @@ export class HiitTimerComponent implements OnInit {
           const pause = (acc.pause || startPause) && !pauseOver
           return { pause: pause, value: curr, round: round, config: config }
         }))
+
+    // stop timer
+    this.stopBtn$.subscribe(() => {
+      this.exec("setPointerBackgroundTo")("#0a599f")
+      this.renderer.setStyle(this.pointer?.nativeElement, "transform", `rotate(${0 * 6}deg)`)
+      this.timer$.next(0)
+    })
 
     // fromEvent(this.startBtn?.nativeElement, "click")
     this.configSubject$
@@ -160,7 +167,6 @@ export class HiitTimerComponent implements OnInit {
     // consumer when break is comming
     this.timer$
       .pipe(
-        //filter(value => value.config?.breakTime > 5),
         pluck("pause"),
         pairwise(),
         map(([a, b]) => !a && b ? "Break" : a && !b ? "Break Over" : ""),
