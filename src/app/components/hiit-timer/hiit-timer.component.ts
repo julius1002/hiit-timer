@@ -160,7 +160,7 @@ export class HiitTimerComponent implements OnInit {
     // consumer when break is comming
     this.timer$
       .pipe(
-        filter(value => value.config?.breakTime > 5),
+        //filter(value => value.config?.breakTime > 5),
         pluck("pause"),
         pairwise(),
         map(([a, b]) => !a && b ? "Break" : a && !b ? "Break Over" : ""),
