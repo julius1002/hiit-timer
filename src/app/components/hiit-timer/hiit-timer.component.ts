@@ -124,8 +124,6 @@ export class HiitTimerComponent implements OnInit {
       .subscribe((arr: any) => {
 
         // todo refactor with map see this.exec()
-
-
         //console.log((arr[0].value * 2)
 
         const roundTimerGreaterTen = (roundTime: number) => roundTime > 10
@@ -146,25 +144,17 @@ export class HiitTimerComponent implements OnInit {
           this.speaker$.next("1")
         }
 
-        this.exec("rotatePointer")(arr[0].value)
         if (arr[0].pause) {
           this.exec("setPointerBackgroundTo")("green")
         } else {
           this.exec("setPointerBackgroundTo")("#0a599f")
         }
+
+        this.exec("rotatePointer")(arr[0].value)
       }
       )
 
-    // consumer is notifi ed when break is over. This happes when a true follows a false with pairwise
-    /*  this.timer$
-        .pipe(
-          pluck("pause"),
-          pairwise(),
-          map(([a, b]) => a && !b),
-          filter(Boolean))
-        .subscribe(() => this.speaker$.next("Break Over"))*/
-
-    // consumer when break is comming
+    // consumer when break/ breakover is comming
     this.timer$
       .pipe(
         pluck("pause"),
@@ -184,8 +174,9 @@ export class HiitTimerComponent implements OnInit {
           this.speaker$.next("Last Round")
         }),
         switchMap((value: any) => timer(value[1].duration * 1000).pipe(takeUntil(this.stopBtn$))),
+        map(() => "You are done")
       )
-      .subscribe(() => this.speaker$.next("You are done"))
+      .subscribe(this.speaker$)
   }
 
   public secondsToDhmsDupl(value: any) {
