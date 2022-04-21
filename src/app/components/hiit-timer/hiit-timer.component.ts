@@ -45,6 +45,7 @@ export class HiitTimerComponent implements OnInit {
   message = new SpeechSynthesisUtterance();
 
   ngOnInit(): void {
+
     const languages: any = {
       "German": /apple/i.test(navigator.vendor) ? 3 : 0,
       "English": /apple/i.test(navigator.vendor) ? 6 : 1,
@@ -55,7 +56,6 @@ export class HiitTimerComponent implements OnInit {
     timer(10).pipe( // getVoices() need some Time to be initialized
       mergeMap(() => this.selectedLanguageSubject$),
     ).subscribe((message: any) => {
-      // this.synth.getVoices().map(value => value.lang).forEach(console.log) for debugging languages on IOS
       this.message.voice =
         this.synth.getVoices()[languages[message]]
     })
@@ -63,12 +63,7 @@ export class HiitTimerComponent implements OnInit {
     this.speaker$
       .pipe(
         withLatestFrom(this.selectedLanguageSubject$),
-        map((value: any) => {
-          const key = value[0]
-          const delayEvent = value[0].type;
-          const language = value[1]
-          return delayEvent ? translation[language][delayEvent](key.seconds) : translation[language][key];
-        })
+        map(([key, selectedLanguage]: any) => key.type ? translation[selectedLanguage][key.type](key.seconds) : translation[selectedLanguage][key])
       )
       .subscribe((msg: any) => {
         this.message.text = msg;
