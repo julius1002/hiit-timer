@@ -177,15 +177,18 @@ rounds: 2
 
     //this.speaker$.subscribe(console.log) speaker debug
 
+
+    const isFirstAndLastRoundPred = (overAllRounds: number) => (timeValue: number) => overAllRounds === 1 && timeValue === 0.1
+
     this.timer$
       .pipe(
         withLatestFrom(this.configSubject$), // first element of array is value, second is config
-        filter(([value, config]: any) => (value.round == (config.rounds - 1)) && (value.value % (config.breakTime + config.duration)) === 0),
+        filter(([{ value, round }, { rounds, breakTime, duration }]: any) => ((round == (rounds - 1)) && (value % (breakTime + duration)) === 0) || isFirstAndLastRoundPred(rounds)(value)),
         tap((_) => {
           this.speaker$.next("Last Round")
         }),
         switchMap(([_, config]: any) =>
-          timer(config.duration * 1000)
+          timer(config.duration * 1_000)
             .pipe(
               takeUntil(this.stopBtn$),
               tap(() => this.finishedWorkout$.next(config))
