@@ -47,11 +47,12 @@ export class HiitTimerFormComponent implements OnInit {
 
     fromEvent(this.submitButton?.nativeElement, "click")
       .pipe(
-        map(() => this.hiitForm.value)).subscribe(this.configSubject$)
+        map(() => this.hiitForm.value))
+      .subscribe(this.configSubject$)
 
   }
 
-  public secondsToDhmsDupl(value:any){
+  public secondsToDhmsDupl(value: any) {
     return secondsToDhms(value)
   }
 

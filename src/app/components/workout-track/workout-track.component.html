@@ -1,0 +1,15 @@
+<h1 style="text-align: center; margin-top: 1em">Past Workouts</h1>
+<ul *ngIf="(this.workouts$ | async) as workouts">
+    <li *ngFor="let workout of workouts" style="margin-top:1em">
+        <strong>Date:</strong> {{workout.date | date: 'short'}}
+        <br>
+        <strong>Rounds:</strong> {{workout.rounds}}
+        <br>
+        <strong>Duration:</strong> {{workout.duration}} Seconds
+        <br>
+        <strong>Breaktime:</strong> {{workout.breakTime}} Seconds
+    </li>
+</ul>
+<div style ="width: 90%; margin: 0 auto">
+    <button mat-raised-button #clearBtn style = "width: 100%;">Clear</button>
+</div>

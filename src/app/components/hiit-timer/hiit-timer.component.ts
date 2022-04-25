@@ -27,6 +27,8 @@ export class HiitTimerComponent implements OnInit {
   // speaker$ and translation functionality should be seperated into service
   speaker$ = new Subject();
 
+  finishedWorkout$ = new Subject();
+
   //arrow animations
   private pointerBackGround = (color: string) => this.renderer.setStyle(this.timerBackground?.nativeElement, "background-color", `${color}`)
   private rotatePointer = (degree: number) => this.renderer.setStyle(this.pointer?.nativeElement, "transform", `rotate(${degree * 6}deg)`)
@@ -118,6 +120,20 @@ export class HiitTimerComponent implements OnInit {
       )
       .subscribe((arr: any) => {
 
+        // TODO arr has redudant properties
+        /*0:
+config: {rounds: 2, duration: 5, initialDelay: 0, breakTime: 2}
+pause: false
+round: 0
+value: 0.3
+[[Prototype]]: Object
+1:
+breakTime: 2
+duration: 5
+initialDelay: 0
+rounds: 2
+[[Prototype]]: Object
+        */
         // todo refactor with map see this.exec()
         //console.log((arr[0].value * 2)
 
@@ -164,11 +180,17 @@ export class HiitTimerComponent implements OnInit {
     this.timer$
       .pipe(
         withLatestFrom(this.configSubject$), // first element of array is value, second is config
-        filter((value: any) => (value[0].round == (value[1].rounds - 1)) && (value[0].value % (value[1].breakTime + value[1].duration)) === 0),
-        tap((value: any) => {
+        filter(([value, config]: any) => (value.round == (config.rounds - 1)) && (value.value % (config.breakTime + config.duration)) === 0),
+        tap((_) => {
           this.speaker$.next("Last Round")
         }),
-        switchMap((value: any) => timer(value[1].duration * 1000).pipe(takeUntil(this.stopBtn$))),
+        switchMap(([_, config]: any) =>
+          timer(config.duration * 1000)
+            .pipe(
+              takeUntil(this.stopBtn$),
+              tap(() => this.finishedWorkout$.next(config))
+            )
+        ),
         map(() => "You are done")
       )
       .subscribe(this.speaker$)
