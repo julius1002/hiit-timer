@@ -51,6 +51,7 @@ export class WorkoutTrackComponent implements OnInit {
     // clearing history
     fromEvent(this.clearBtn!.nativeElement, "click")
       .pipe(
+        filter(() => confirm("Do you want to clear your workout history?")),
         tap(() => localStorage.removeItem("savedWorkouts")),
         map(() => [])
       ).subscribe(this.workouts$)
