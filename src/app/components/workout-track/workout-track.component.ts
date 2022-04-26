@@ -23,21 +23,17 @@ export class WorkoutTrackComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     const putWorkoutToLocalStorage = (workout: any) => localStorage.getItem("savedWorkouts") ?
       localStorage.setItem("savedWorkouts", JSON.stringify([workout, ...JSON.parse(localStorage.getItem("savedWorkouts")!)])) :
       localStorage.setItem("savedWorkouts", JSON.stringify([workout]))
 
     // new workout finished
-    this.finishedWorkout$
-      ?.pipe(
-        map((config: any) => ({ ...config, date: Date.now() })),
-        tap(putWorkoutToLocalStorage),
-        map((config: any) => R.take(5, JSON.parse(localStorage.getItem("savedWorkouts")!))),
-      )
+    this.finishedWorkout$?.pipe(
+      map((config: any) => ({ ...config, date: Date.now() })),
+      tap(putWorkoutToLocalStorage),
+      map((_: any) => R.take(5, JSON.parse(localStorage.getItem("savedWorkouts")!))),
+    )
       .subscribe(this.workouts$)
-
-    this.workouts$.subscribe(console.log)
 
     const scrollToBottomPred = ({ deltaY }: any) => deltaY >= 0
 
@@ -47,22 +43,16 @@ export class WorkoutTrackComponent implements OnInit {
         map(scrollToBottomPred),
         filter(Boolean),
         throttleTime(1500),
-        scan((acc: any, _) => {
-          return acc += 5;
-        }, 5),
-        map((size) => R.take(size, JSON.parse(localStorage.getItem("savedWorkouts")!)))
+        scan((acc: any, _) => acc += 5, 5),
+        map((size) => R.take(size, localStorage.getItem("savedWorkouts") ? JSON.parse(localStorage.getItem("savedWorkouts")!) : []))
       )
       .subscribe(this.workouts$)
-    console.log(Math.ceil(JSON.parse(localStorage.getItem("savedWorkouts")!).length / 5))
-    console.log(JSON.parse(localStorage.getItem("savedWorkouts")!))
 
     // clearing history
     fromEvent(this.clearBtn!.nativeElement, "click")
       .pipe(
-        tap(console.log),
         tap(() => localStorage.removeItem("savedWorkouts")),
         map(() => [])
       ).subscribe(this.workouts$)
   }
-
 }
