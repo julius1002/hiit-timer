@@ -191,7 +191,7 @@ rounds: 2
           timer(config.duration * 1_000)
             .pipe(
               takeUntil(this.stopBtn$),
-              tap(() => this.finishedWorkout$.next(config))
+              tap(() => this.finishedWorkout$.next(config)) // take overall time to display on history
             )
         ),
         map(() => "You are done")

@@ -35,7 +35,7 @@ import { WorkoutTrackComponent } from './components/workout-track/workout-track.
     MatButtonModule,
     MatProgressSpinnerModule,
     MatIconModule,
-    MatSelectModule
+    MatSelectModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
