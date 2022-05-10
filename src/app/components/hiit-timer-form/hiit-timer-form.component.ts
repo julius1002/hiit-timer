@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { fromEvent, map, Subject } from 'rxjs';
+import { EMPTY, fromEvent, map, Observable, scan, startWith, Subject } from 'rxjs';
 import { secondsToDhms } from '../secondToDhms';
 
 @Component({
@@ -14,6 +14,8 @@ export class HiitTimerFormComponent implements OnInit {
 
   @ViewChild('stopBtn', { read: ElementRef, static: true }) stopBtn: ElementRef | undefined;
 
+  @ViewChild('pauseBtn', { read: ElementRef, static: true }) pauseBtn: ElementRef | undefined;
+
   hiitForm: FormGroup;
 
   @Input()
@@ -21,6 +23,11 @@ export class HiitTimerFormComponent implements OnInit {
 
   @Input()
   stopBtn$: Subject<any> | undefined;
+
+  @Input()
+  pauseBtn$: Subject<any> | undefined;
+
+  resting$: Observable<any> = EMPTY;
 
   constructor(private fb: FormBuilder) {
     this.hiitForm = this.fb.group({
@@ -32,6 +39,9 @@ export class HiitTimerFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    fromEvent(this.pauseBtn!.nativeElement, "click")
+      .subscribe(this.pauseBtn$)
+
     fromEvent(this.stopBtn!.nativeElement, "click")
       .subscribe(this.stopBtn$)
     const formValue = localStorage.getItem("hiitForm") ? JSON.parse(localStorage.getItem("hiitForm")!) : {
@@ -49,6 +59,11 @@ export class HiitTimerFormComponent implements OnInit {
       .pipe(
         map(() => this.hiitForm.value))
       .subscribe(this.configSubject$)
+
+    this.resting$ = this.pauseBtn$!
+      .pipe(
+        startWith(false),
+        scan((acc, _) => !acc, true))
 
   }
 

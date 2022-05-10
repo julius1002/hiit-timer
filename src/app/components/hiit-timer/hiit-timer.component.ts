@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { interval, delay, map, take, scan, tap, Subject, switchMap, takeUntil, pairwise, filter, timer, withLatestFrom, pluck, BehaviorSubject, mergeMap, distinctUntilChanged } from 'rxjs';
+import { interval, delay, map, take, scan, tap, Subject, switchMap, takeUntil, pairwise, filter, timer, withLatestFrom, pluck, BehaviorSubject, mergeMap, distinctUntilChanged, expand, of, startWith, skipUntil, auditTime, takeWhile, mergeWith } from 'rxjs';
 import * as R from 'ramda'
 import { translation } from "./translation"
 import { secondsToDhms } from '../secondToDhms';
@@ -16,9 +16,13 @@ export class HiitTimerComponent implements OnInit {
   @ViewChild('pointer', { static: true }) pointer: ElementRef | undefined;
   @ViewChild('timerBackground', { static: true }) timerBackground: ElementRef | undefined;
 
-  timer$: Subject<any> = new Subject();
+  timer$: Subject<any> = new BehaviorSubject(0);
 
   stopBtn$: Subject<any> = new Subject();
+
+  pauseBtn$: Subject<any> = new Subject();
+
+  pausedAt$ = new BehaviorSubject(0);
 
   configSubject$ = new Subject(); // consumer of the config produced by hiit form component
 
@@ -47,7 +51,6 @@ export class HiitTimerComponent implements OnInit {
   message = new SpeechSynthesisUtterance();
 
   ngOnInit(): void {
-
     const languages: any = {
       "German": /apple/i.test(navigator.vendor) ? 3 : 0,
       "English": /apple/i.test(navigator.vendor) ? 6 : 1,
@@ -87,82 +90,105 @@ export class HiitTimerComponent implements OnInit {
       this.speaker$.next({ type: "Delay", seconds: value.initialDelay })
     })
 
-    const hiit$ = (config: any) => interval(100)
+    const resting$ = this.pauseBtn$
       .pipe(
-        delay(config.initialDelay * 1000),
-        takeUntil(this.stopBtn$),
-        map(everyTenth),
-        take((((config.rounds * config.duration) + ((config.rounds - 1) * config.breakTime)) * 10)),
-        scan((acc: any, curr: number) => {
-          const round = Math.floor(curr / (config.breakTime + config.duration))
-          const pauseOver = (curr % (config.breakTime + config.duration)) === 0
-          const startPause = Number.isInteger(curr / (((round + 1) * config.duration) + (round * config.breakTime)))
-          const pause = (acc.pause || startPause) && !pauseOver
-          return { pause: pause, value: curr, round: round, config: config }
-        }))
+        startWith(false),
+        scan((acc, _) => !acc, true)
+      )
+
+
+    const hiit$ = (config: any) =>
+      interval(100)
+        .pipe(
+          delay(config.initialDelay * 1000),
+          takeUntil(this.stopBtn$),
+          withLatestFrom(resting$),
+          scan(({ pause, value, round, config }: any, [_, rest]) => {
+            const newRound = Math.floor((value / 10) / (config.breakTime + config.duration))
+            const pauseOver = ((value / 10) % (config.breakTime + config.duration)) === 0
+            const startPause = Number.isInteger((value / 10) / (((round + 1) * config.duration) + (round * config.breakTime)))
+            const newPause = (pause || startPause) && !pauseOver
+            return { pause: newPause, value: rest ? value : R.add(1)(value), round: newRound, config: config }
+          }, { pause: false, value: 0, round: 0, config: config }),
+          map(({ value, ...state }: any) => ({ ...state, value: everyTenth(value) })),
+          takeWhile(({ value, config: { rounds, duration, breakTime } }) => value < (rounds * duration + ((rounds - 1) * breakTime))),
+          distinctUntilChanged((prev, cur) => prev.value === cur.value),
+        )
+
+    /*this.hiitForm.get('rounds')?.value *
+        (this.hiitForm.get('duration')?.value) + (this.hiitForm.get('rounds')?.value - 1) *
+        this.hiitForm.get('breakTime')?.value*/
+
 
     // stop timer
     this.stopBtn$.subscribe(() => {
       this.exec("setPointerBackgroundTo")("#0a599f")
       this.renderer.setStyle(this.pointer?.nativeElement, "transform", `rotate(${0 * 6}deg)`)
+      this.pausedAt$.next(0)
       this.timer$.next(0)
     })
 
-    // fromEvent(this.startBtn?.nativeElement, "click")
+    // fromEvent(this.startBtn?.nativeElement, "click"
+
     this.configSubject$
       .pipe(
-        switchMap((config) => hiit$(config)))
+        switchMap((config) => hiit$(config)
+        )
+      )
       .subscribe(this.timer$)
 
     this.timer$
       .pipe(
         withLatestFrom(this.configSubject$) // first element of array is value, second is config
       )
-      .subscribe((arr: any) => {
+      .subscribe(
+        {
+          next: (arr: any) => {
 
-        // TODO arr has redudant properties
-        /*0:
-config: {rounds: 2, duration: 5, initialDelay: 0, breakTime: 2}
-pause: false
-round: 0
-value: 0.3
-[[Prototype]]: Object
-1:
-breakTime: 2
-duration: 5
-initialDelay: 0
-rounds: 2
-[[Prototype]]: Object
-        */
-        // todo refactor with map see this.exec()
-        //console.log((arr[0].value * 2)
+            // TODO arr has redudant properties
+            /*0:
+        config: {rounds: 2, duration: 5, initialDelay: 0, breakTime: 2}
+        pause: false
+        round: 0
+        value: 0.3
+        [[Prototype]]: Object
+        1:
+        breakTime: 2
+        duration: 5
+        initialDelay: 0
+        rounds: 2
+        [[Prototype]]: Object
+            */
+            // todo refactor with map see this.exec()
+            //console.log((arr[0].value * 2)
 
-        const roundTimerGreaterTen = (roundTime: number) => roundTime > 10
+            const roundTimerGreaterTen = (roundTime: number) => roundTime > 10
 
-        if ((arr[0].value % (arr[1].breakTime + arr[1].duration) === (arr[1].duration / 2)) && roundTimerGreaterTen(arr[1].duration)) {
-          this.speaker$.next("Halfway Through")
+            if ((arr[0].value % (arr[1].breakTime + arr[1].duration) === (arr[1].duration / 2)) && roundTimerGreaterTen(arr[1].duration)) {
+              this.speaker$.next("Halfway Through")
+            }
+
+            if (!arr[0].pause && Number.isInteger((arr[0].value + 3) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
+              this.speaker$.next("3")
+            }
+
+            if (!arr[0].pause && Number.isInteger((arr[0].value + 2) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
+              this.speaker$.next("2")
+            }
+
+            if (!arr[0].pause && Number.isInteger((arr[0].value + 1) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
+              this.speaker$.next("1")
+            }
+
+            if (arr[0].pause) {
+              this.exec("setPointerBackgroundTo")("green")
+            } else {
+              this.exec("setPointerBackgroundTo")("#0a599f")
+            }
+
+            this.exec("rotatePointer")(arr[0].value)
+          }
         }
-
-        if (!arr[0].pause && Number.isInteger((arr[0].value + 3) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
-          this.speaker$.next("3")
-        }
-
-        if (!arr[0].pause && Number.isInteger((arr[0].value + 2) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
-          this.speaker$.next("2")
-        }
-
-        if (!arr[0].pause && Number.isInteger((arr[0].value + 1) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
-          this.speaker$.next("1")
-        }
-
-        if (arr[0].pause) {
-          this.exec("setPointerBackgroundTo")("green")
-        } else {
-          this.exec("setPointerBackgroundTo")("#0a599f")
-        }
-
-        this.exec("rotatePointer")(arr[0].value)
-      }
       )
 
     // consumer when break/ breakover is comming
