@@ -36,12 +36,13 @@
             [disabled]="this.hiitForm.status === 'INVALID'" mat-raised-button>
             <mat-icon inline style="font-size: 3em">play_arrow</mat-icon>
         </button>
-        <button style="flex-basis: 30%" type="button" mat-raised-button #pauseBtn>
+        <button style="flex-basis: 30%" type="button" mat-raised-button #pauseBtn
+            disabled="{{!(this.timerIsTicking$ | async)}}">
             <ng-container *ngIf="!(this.resting$ | async); else continue">
                 <mat-icon inline style="font-size: 3em;">pause</mat-icon>
             </ng-container>
             <ng-template #continue>
-                <mat-icon inline style ="font-size: 3em;">forward</mat-icon>
+                <mat-icon inline style="font-size: 3em;">forward</mat-icon>
             </ng-template>
         </button>
         <button style="flex-basis: 30%;margin-right:1em" #stopBtn type="button" mat-raised-button>

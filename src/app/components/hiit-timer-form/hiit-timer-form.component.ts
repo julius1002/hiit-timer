@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EMPTY, fromEvent, map, Observable, scan, startWith, Subject } from 'rxjs';
+import { EMPTY, fromEvent, map, Observable, scan, startWith, Subject, merge } from 'rxjs';
 import { secondsToDhms } from '../secondToDhms';
 
 @Component({
@@ -29,6 +29,8 @@ export class HiitTimerFormComponent implements OnInit {
 
   resting$: Observable<any> = EMPTY;
 
+  timerIsTicking$: Observable<boolean> = EMPTY;
+
   constructor(private fb: FormBuilder) {
     this.hiitForm = this.fb.group({
       rounds: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
@@ -39,6 +41,7 @@ export class HiitTimerFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  
     fromEvent(this.pauseBtn!.nativeElement, "click")
       .subscribe(this.pauseBtn$)
 
@@ -60,11 +63,16 @@ export class HiitTimerFormComponent implements OnInit {
         map(() => this.hiitForm.value))
       .subscribe(this.configSubject$)
 
+    this.timerIsTicking$ = merge(
+      fromEvent(this.submitButton?.nativeElement, "click").pipe(map(() => true)),
+      fromEvent(this.stopBtn!.nativeElement, "click").pipe(map(() => false))
+    ).pipe(startWith(false))
+
     this.resting$ = this.pauseBtn$!
       .pipe(
         startWith(false),
-        scan((acc, _) => !acc, true))
-
+        scan((acc, _) => !acc, true)
+      )
   }
 
   public secondsToDhmsDupl(value: any) {

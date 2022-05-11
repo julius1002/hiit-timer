@@ -51,6 +51,7 @@ export class HiitTimerComponent implements OnInit {
   message = new SpeechSynthesisUtterance();
 
   ngOnInit(): void {
+
     const languages: any = {
       "German": /apple/i.test(navigator.vendor) ? 3 : 0,
       "English": /apple/i.test(navigator.vendor) ? 6 : 1,
@@ -61,8 +62,7 @@ export class HiitTimerComponent implements OnInit {
     timer(10).pipe( // getVoices() need some Time to be initialized
       mergeMap(() => this.selectedLanguageSubject$),
     ).subscribe((message: any) => {
-      this.message.voice =
-        this.synth.getVoices()[languages[message]]
+      this.message.voice = this.synth.getVoices()[languages[message]]
     })
 
     this.speaker$
@@ -75,17 +75,6 @@ export class HiitTimerComponent implements OnInit {
         window.speechSynthesis.speak(this.message)
       })
 
-    // sum up elements [1,2,3,4] (range(1,5))
-    const sum = (input: number) => R.reduce(((a: number, b: number) => a + b), 0)(R.range(1, input))
-
-    //playing around with rambda
-    /*  console.log(R.range(1, 5))
-      console.log(R.zipWith((a, b: any) => a + b)(R.range(1, 5), R.range(1, 5)))
-      console.log(sum(5)) */
-
-    const everyTenth: (a: number) => number
-      = (n: number) => n / 10;
-
     this.configSubject$.subscribe((value: any) => {
       this.speaker$.next({ type: "Delay", seconds: value.initialDelay })
     })
@@ -93,16 +82,15 @@ export class HiitTimerComponent implements OnInit {
     const resting$ = this.pauseBtn$
       .pipe(
         startWith(false),
-        scan((acc, _) => !acc, true)
+        scan((acc, _) => !acc, true) //takes current state (true) and derives new state, through passed function
       )
-
 
     const hiit$ = (config: any) =>
       interval(100)
         .pipe(
           delay(config.initialDelay * 1000),
           takeUntil(this.stopBtn$),
-          withLatestFrom(resting$),
+          withLatestFrom(resting$), // another option is to use scan and collect all events that manipulate the state during a single stream (happens here too, but looks cleaner in scan)
           scan(({ pause, value, round, config }: any, [_, rest]) => {
             const newRound = Math.floor((value / 10) / (config.breakTime + config.duration))
             const pauseOver = ((value / 10) % (config.breakTime + config.duration)) === 0
@@ -110,17 +98,10 @@ export class HiitTimerComponent implements OnInit {
             const newPause = (pause || startPause) && !pauseOver
             return { pause: newPause, value: rest ? value : R.add(1)(value), round: newRound, config: config }
           }, { pause: false, value: 0, round: 0, config: config }),
-          map(({ value, ...state }: any) => ({ ...state, value: everyTenth(value) })),
-          takeWhile(({ value, config: { rounds, duration, breakTime } }) => value < (rounds * duration + ((rounds - 1) * breakTime))),
+          map(({ value, ...state }: any) => ({ ...state, value: value / 10 })),
           distinctUntilChanged((prev, cur) => prev.value === cur.value),
         )
 
-    /*this.hiitForm.get('rounds')?.value *
-        (this.hiitForm.get('duration')?.value) + (this.hiitForm.get('rounds')?.value - 1) *
-        this.hiitForm.get('breakTime')?.value*/
-
-
-    // stop timer
     this.stopBtn$.subscribe(() => {
       this.exec("setPointerBackgroundTo")("#0a599f")
       this.renderer.setStyle(this.pointer?.nativeElement, "transform", `rotate(${0 * 6}deg)`)
@@ -128,68 +109,32 @@ export class HiitTimerComponent implements OnInit {
       this.timer$.next(0)
     })
 
-    // fromEvent(this.startBtn?.nativeElement, "click"
-
     this.configSubject$
       .pipe(
         switchMap((config) => hiit$(config)
+          .pipe(
+            takeWhile(({ value, config: { rounds, duration, breakTime } }) => value <= (rounds * duration + ((rounds - 1) * breakTime))),
+            tap({
+              next: ({ config: { breakTime, duration, initialDelay, rounds }, pause, round, value }) => {
+
+                const roundTimerGreaterTen = duration > 10
+
+                if ((value % (breakTime + duration) === (duration / 2)) && roundTimerGreaterTen) { this.speaker$.next("Halfway Through") }
+
+                if (!pause && Number.isInteger((value + 3) / (((round + 1) * duration) + (round * breakTime))) && roundTimerGreaterTen) { this.speaker$.next("3") }
+                if (!pause && Number.isInteger((value + 2) / (((round + 1) * duration) + (round * breakTime))) && roundTimerGreaterTen) { this.speaker$.next("2") }
+                if (!pause && Number.isInteger((value + 1) / (((round + 1) * duration) + (round * breakTime))) && roundTimerGreaterTen) { this.speaker$.next("1") }
+
+                if (pause) { this.exec("setPointerBackgroundTo")("green") } else { this.exec("setPointerBackgroundTo")("#0a599f") }
+
+                this.exec("rotatePointer")(value)
+              },
+              complete: () => {
+                this.speaker$.next("You are done")
+              }
+            }))
         )
-      )
-      .subscribe(this.timer$)
-
-    this.timer$
-      .pipe(
-        withLatestFrom(this.configSubject$) // first element of array is value, second is config
-      )
-      .subscribe(
-        {
-          next: (arr: any) => {
-
-            // TODO arr has redudant properties
-            /*0:
-        config: {rounds: 2, duration: 5, initialDelay: 0, breakTime: 2}
-        pause: false
-        round: 0
-        value: 0.3
-        [[Prototype]]: Object
-        1:
-        breakTime: 2
-        duration: 5
-        initialDelay: 0
-        rounds: 2
-        [[Prototype]]: Object
-            */
-            // todo refactor with map see this.exec()
-            //console.log((arr[0].value * 2)
-
-            const roundTimerGreaterTen = (roundTime: number) => roundTime > 10
-
-            if ((arr[0].value % (arr[1].breakTime + arr[1].duration) === (arr[1].duration / 2)) && roundTimerGreaterTen(arr[1].duration)) {
-              this.speaker$.next("Halfway Through")
-            }
-
-            if (!arr[0].pause && Number.isInteger((arr[0].value + 3) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
-              this.speaker$.next("3")
-            }
-
-            if (!arr[0].pause && Number.isInteger((arr[0].value + 2) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
-              this.speaker$.next("2")
-            }
-
-            if (!arr[0].pause && Number.isInteger((arr[0].value + 1) / (((arr[0].round + 1) * arr[1].duration) + (arr[0].round * arr[1].breakTime))) && roundTimerGreaterTen(arr[1].duration)) {
-              this.speaker$.next("1")
-            }
-
-            if (arr[0].pause) {
-              this.exec("setPointerBackgroundTo")("green")
-            } else {
-              this.exec("setPointerBackgroundTo")("#0a599f")
-            }
-
-            this.exec("rotatePointer")(arr[0].value)
-          }
-        }
-      )
+      ).subscribe(this.timer$)
 
     // consumer when break/ breakover is comming
     this.timer$
@@ -201,31 +146,9 @@ export class HiitTimerComponent implements OnInit {
       )
       .subscribe(this.speaker$)
 
-    //this.speaker$.subscribe(console.log) speaker debug
-
-
-    const isFirstAndLastRoundPred = (overAllRounds: number) => (timeValue: number) => overAllRounds === 1 && timeValue === 0.1
-
-    this.timer$
-      .pipe(
-        withLatestFrom(this.configSubject$), // first element of array is value, second is config
-        filter(([{ value, round }, { rounds, breakTime, duration }]: any) => ((round == (rounds - 1)) && (value % (breakTime + duration)) === 0) || isFirstAndLastRoundPred(rounds)(value)),
-        tap((_) => {
-          this.speaker$.next("Last Round")
-        }),
-        switchMap(([_, config]: any) =>
-          timer(config.duration * 1_000)
-            .pipe(
-              takeUntil(this.stopBtn$),
-              tap(() => this.finishedWorkout$.next(config)) // take overall time to display on history
-            )
-        ),
-        map(() => "You are done")
-      )
-      .subscribe(this.speaker$)
   }
 
-  public secondsToDhmsDupl(value: any) {
+  secondsToDhmsDupl(value: any) {
     return secondsToDhms(value)
   }
 }
