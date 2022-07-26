@@ -1,4 +1,5 @@
 https://cryptic-plateau-94228.herokuapp.com/
+!! Use mobile view !!
 
 TODO: remove unnecessary devdependencies from dependencies (    "@angular-devkit/build-angular": "~13.2.4",
     "@angular/cli": "~13.2.4",
