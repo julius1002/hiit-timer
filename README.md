@@ -1,5 +1,7 @@
-https://cryptic-plateau-94228.herokuapp.com/
-!! Use mobile view !!
+Frontend component, allows users to do HIIT sessions and track their workout solely using the browser.
+Was planned to be part of https://github.com/julius1002/gymaudit-web.
+
+Can be found on (use mobile view): https://cryptic-plateau-94228.herokuapp.com/.
 
 TODO: remove unnecessary devdependencies from dependencies (    "@angular-devkit/build-angular": "~13.2.4",
     "@angular/cli": "~13.2.4",
